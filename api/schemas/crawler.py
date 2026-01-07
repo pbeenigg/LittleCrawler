@@ -17,6 +17,7 @@ class PlatformEnum(str, Enum):
     """支持的平台枚举"""
     XHS = "xhs"      # 小红书
     ZHIHU = "zhihu"  # 知乎
+    XHY = "xhy"     # 小黄鱼 & 闲鱼
 
 
 class LoginTypeEnum(str, Enum):

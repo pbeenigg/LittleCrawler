@@ -28,7 +28,7 @@ async def start_crawler(
     """
     启动爬虫任务
     
-    - **platform**: 目标平台 (xhs/zhihu)
+    - **platform**: 目标平台 (xhs/zhihu/xhy)
     - **crawler_type**: 爬取类型 (search/detail/creator)
     - **keywords**: 搜索关键词（search模式）
     """

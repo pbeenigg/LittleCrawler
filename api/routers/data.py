@@ -68,7 +68,7 @@ async def list_data_files(
     """
     获取数据文件列表
     
-    - **platform**: 平台过滤 (xhs/zhihu)
+    - **platform**: 平台过滤 (xhs/zhihu/xhy)
     - **file_type**: 文件类型过滤 (json/csv/xlsx)
     """
     if not DATA_DIR.exists():
@@ -255,7 +255,7 @@ async def get_data_stats(current_user: dict = Depends(get_current_user)):
 
                 # 按平台统计（从路径推断）
                 rel_path = str(file_path.relative_to(DATA_DIR))
-                for platform in ["xhs", "zhihu"]:
+                for platform in ["xhs", "zhihu", "xhy"]:
                     if platform in rel_path.lower():
                         stats["by_platform"][platform] = stats["by_platform"].get(platform, 0) + 1
                         break
