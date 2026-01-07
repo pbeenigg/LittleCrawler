@@ -1,0 +1,172 @@
+{
+  "common": {
+    "appName": "LittleCrawler",
+    "version": "v1.0.0",
+    "login": "Login",
+    "logout": "Logout",
+    "username": "Username",
+    "password": "Password",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "loading": "Loading...",
+    "success": "Success",
+    "error": "Error",
+    "confirm": "Confirm",
+    "clear": "Clear",
+    "download": "Download",
+    "export": "Export",
+    "refresh": "Refresh",
+    "start": "Start",
+    "stop": "Stop",
+    "status": "Status",
+    "actions": "Actions",
+    "settings": "Settings",
+    "theme": "Theme",
+    "language": "Language",
+    "dark": "Dark",
+    "light": "Light",
+    "chinese": "中文",
+    "english": "English",
+    "running": "Running",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "dataOverview": "Data Overview",
+    "totalData": "Total",
+    "todayData": "Today",
+    "viewAll": "View All",
+    "openLink": "Open Link",
+    "copyright": "LittleCrawler © 2025 - Multi-platform Social Media Crawler"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "crawler": "Crawler",
+    "data": "Data",
+    "logs": "Logs",
+    "settings": "Settings"
+  },
+  "login": {
+    "title": "Welcome to LittleCrawler",
+    "subtitle": "Multi-platform Social Media Crawler",
+    "placeholder": {
+      "username": "Enter username",
+      "password": "Enter password"
+    },
+    "error": {
+      "required": "Please enter username and password",
+      "invalid": "Invalid username or password"
+    }
+  },
+  "dashboard": {
+    "title": "Overview",
+    "crawlerConfig": "Crawler Config",
+    "configDescription": "Configure and start crawler tasks",
+    "configDesc": "Configure and start crawler",
+    "apiStatus": "API Status",
+    "healthy": "Healthy",
+    "unhealthy": "Unhealthy",
+    "platforms": "Supported Platforms",
+    "currentUser": "Current User",
+    "systemVersion": "System Version",
+    "realtimeLogs": "Realtime Logs",
+    "logsDesc": "View crawler status",
+    "dataPreview": "Data Preview",
+    "enableProxy": "Proxy",
+    "enableCdp": "CDP Mode",
+    "advanced": "Advanced",
+    "dataStats": "Data Statistics",
+    "collectedData": "Collected data",
+    "latestData": "Latest Data",
+    "latestRecords": "Latest 10 records"
+  },
+  "crawler": {
+    "title": "Crawler Settings",
+    "platform": "Platform",
+    "crawlerType": "Type",
+    "loginType": "Login",
+    "keywords": "Keywords",
+    "keywordsPlaceholder": "Separated by comma",
+    "startPage": "Start Page",
+    "maxPages": "Max Pages",
+    "maxPagesPlaceholder": "Empty for unlimited",
+    "maxPagesDescription": "Leave empty to crawl all pages",
+    "maxPage": "Max Pages",
+    "startCrawl": "Start Crawl",
+    "stopCrawl": "Stop Crawl",
+    "enableProxy": "Enable Proxy",
+    "cdpMode": "CDP Mode",
+    "types": {
+      "search": "Search",
+      "detail": "Detail",
+      "creator": "Creator"
+    },
+    "loginTypes": {
+      "qrcode": "QR Code",
+      "phone": "Phone",
+      "cookie": "Cookie"
+    },
+    "platforms": {
+      "xhs": "Xiaohongshu",
+      "zhihu": "Zhihu"
+    },
+    "status": {
+      "idle": "Idle",
+      "running": "Running",
+      "completed": "Completed",
+      "error": "Error"
+    }
+  },
+  "data": {
+    "title": "Data Management",
+    "saveFormat": "Storage",
+    "fetchImages": "Fetch Images",
+    "fetchComments": "Fetch Comments",
+    "fetchSubComments": "Fetch Sub-Comments",
+    "headlessMode": "Headless Mode",
+    "dataList": "Data List",
+    "noData": "No data yet, start crawler to collect",
+    "totalRecords": "{count} records",
+    "records": "records",
+    "notes": "Notes",
+    "comments": "Comments",
+    "title": "Title",
+    "author": "Author",
+    "type": "Type",
+    "likes": "Likes",
+    "exportJson": "Export JSON",
+    "exportCsv": "Export CSV",
+    "exportExcel": "Export Excel",
+    "formats": {
+      "csv": "CSV",
+      "json": "JSON",
+      "db": "MySQL",
+      "sqlite": "SQLite",
+      "mongodb": "MongoDB",
+      "excel": "Excel"
+    },
+    "columns": {
+      "id": "ID",
+      "title": "Title",
+      "author": "Author",
+      "likes": "Likes",
+      "comments": "Comments",
+      "createTime": "Created At"
+    }
+  },
+  "logs": {
+    "title": "Runtime Logs",
+    "displayCount": "Display Count",
+    "clearLogs": "Clear Logs",
+    "autoScroll": "Auto Scroll",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "reconnect": "Reconnect",
+    "noLogs": "No logs yet",
+    "systemLog": "System Log",
+    "entries": "entries",
+    "waiting": "Waiting for logs..."
+  }
+}

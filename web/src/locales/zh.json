@@ -1,0 +1,172 @@
+{
+  "common": {
+    "appName": "LittleCrawler",
+    "version": "v1.0.0",
+    "login": "登录",
+    "logout": "退出登录",
+    "username": "用户名",
+    "password": "密码",
+    "submit": "提交",
+    "cancel": "取消",
+    "save": "保存",
+    "delete": "删除",
+    "edit": "编辑",
+    "search": "搜索",
+    "loading": "加载中...",
+    "success": "成功",
+    "error": "错误",
+    "confirm": "确认",
+    "clear": "清空",
+    "download": "下载",
+    "export": "导出",
+    "refresh": "刷新",
+    "start": "启动",
+    "stop": "停止",
+    "status": "状态",
+    "actions": "操作",
+    "settings": "设置",
+    "theme": "主题",
+    "language": "语言",
+    "dark": "深色",
+    "light": "浅色",
+    "chinese": "中文",
+    "english": "English",
+    "running": "运行中",
+    "connected": "实时连接",
+    "disconnected": "连接断开",
+    "dataOverview": "数据概览",
+    "totalData": "总数据",
+    "todayData": "今日新增",
+    "viewAll": "查看全部",
+    "openLink": "打开链接",
+    "copyright": "LittleCrawler © 2025 - 多平台社交媒体爬虫框架"
+  },
+  "nav": {
+    "dashboard": "仪表盘",
+    "crawler": "爬虫管理",
+    "data": "数据管理",
+    "logs": "运行日志",
+    "settings": "系统设置"
+  },
+  "login": {
+    "title": "欢迎使用 LittleCrawler",
+    "subtitle": "多平台社交媒体数据采集工具",
+    "placeholder": {
+      "username": "请输入用户名",
+      "password": "请输入密码"
+    },
+    "error": {
+      "required": "请输入用户名和密码",
+      "invalid": "用户名或密码错误"
+    }
+  },
+  "dashboard": {
+    "title": "系统概览",
+    "crawlerConfig": "爬虫配置",
+    "configDescription": "配置并启动爬虫任务",
+    "configDesc": "配置并启动爬虫任务",
+    "apiStatus": "API状态",
+    "healthy": "正常",
+    "unhealthy": "异常",
+    "platforms": "支持平台",
+    "currentUser": "当前用户",
+    "systemVersion": "系统版本",
+    "realtimeLogs": "实时日志",
+    "logsDesc": "查看爬虫运行状态",
+    "dataPreview": "数据预览",
+    "enableProxy": "代理",
+    "enableCdp": "CDP模式",
+    "advanced": "高级选项",
+    "dataStats": "数据统计",
+    "collectedData": "已采集的数据",
+    "latestData": "最新数据",
+    "latestRecords": "最近采集的10条记录"
+  },
+  "crawler": {
+    "title": "爬虫配置",
+    "platform": "平台",
+    "crawlerType": "类型",
+    "loginType": "登录",
+    "keywords": "搜索关键词",
+    "keywordsPlaceholder": "多个用逗号分隔",
+    "startPage": "起始页码",
+    "maxPages": "最大页数",
+    "maxPagesPlaceholder": "留空为无限制",
+    "maxPagesDescription": "不填则爬取所有页面",
+    "maxPage": "最大页数",
+    "startCrawl": "开始爬取",
+    "stopCrawl": "停止爬取",
+    "enableProxy": "启用代理",
+    "cdpMode": "CDP 模式",
+    "types": {
+      "search": "搜索",
+      "detail": "详情",
+      "creator": "创作者"
+    },
+    "loginTypes": {
+      "qrcode": "扫码",
+      "phone": "手机",
+      "cookie": "Cookie"
+    },
+    "platforms": {
+      "xhs": "小红书",
+      "zhihu": "知乎"
+    },
+    "status": {
+      "idle": "空闲",
+      "running": "运行中",
+      "completed": "已完成",
+      "error": "出错"
+    }
+  },
+  "data": {
+    "title": "数据管理",
+    "saveFormat": "存储",
+    "fetchImages": "抓取图片",
+    "fetchComments": "抓取评论",
+    "fetchSubComments": "抓取子评论",
+    "headlessMode": "无头模式",
+    "dataList": "数据列表",
+    "noData": "暂无数据，启动爬虫开始采集",
+    "totalRecords": "共 {count} 条记录",
+    "records": "条记录",
+    "notes": "笔记",
+    "comments": "评论",
+    "title": "标题",
+    "author": "作者",
+    "type": "类型",
+    "likes": "点赞",
+    "exportJson": "导出 JSON",
+    "exportCsv": "导出 CSV",
+    "exportExcel": "导出 Excel",
+    "formats": {
+      "csv": "CSV",
+      "json": "JSON",
+      "db": "MySQL",
+      "sqlite": "SQLite",
+      "mongodb": "MongoDB",
+      "excel": "Excel"
+    },
+    "columns": {
+      "id": "ID",
+      "title": "标题",
+      "author": "作者",
+      "likes": "点赞",
+      "comments": "评论",
+      "createTime": "创建时间"
+    }
+  },
+  "logs": {
+    "title": "运行日志",
+    "displayCount": "显示条数",
+    "clearLogs": "清空日志",
+    "autoScroll": "自动滚动",
+    "connected": "已连接",
+    "disconnected": "已断开",
+    "reconnect": "重新连接",
+    "noLogs": "暂无日志",
+    "systemLog": "系统日志",
+    "entries": "条日志",
+    "waiting": "等待日志输出..."
+  }
+}
