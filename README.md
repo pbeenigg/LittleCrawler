@@ -99,7 +99,7 @@ cd ./web &&  npm run dev
   </tr>
   <tr>
     <td><img src="docs/images/login.jpg" width="400" alt="登录页面"></td>
-    <td><img src="docs/images/start.jpg" width="400" alt="启动配置"></td>
+    <td><img src="docs/images/start1.jpg" width="400" alt="启动配置"></td>
   </tr>
   <tr>
     <td align="center" colspan="2"><b>📊 运行状态</b></td>
