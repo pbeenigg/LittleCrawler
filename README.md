@@ -94,18 +94,18 @@ cd ./web &&  npm run dev
 
 <table>
   <tr>
-    <td align="center"><b>🔐 登录页面</b></td>
-    <td align="center"><b>🚀 启动配置</b></td>
+    <td align="center"><b>🔐 登录</b></td>
+    <td align="center"><b>🚀 启动</b></td>
   </tr>
   <tr>
-    <td><img src="docs/images/login.jpg" width="400" alt="登录页面"></td>
-    <td><img src="docs/images/start1.jpg" width="400" alt="启动配置"></td>
+    <td><img src="docs/images/login.jpg" width="400" alt="登录"></td>
+    <td><img src="docs/images/run.jpg" width="400" alt="状态"></td>
   </tr>
   <tr>
-    <td align="center" colspan="2"><b>📊 运行状态</b></td>
+    <td align="center" colspan="2"><b>📊 首页</b></td>
   </tr>
   <tr>
-    <td colspan="2" align="center"><img src="docs/images/run.jpg" width="700" alt="运行状态"></td>
+    <td colspan="2" align="center"><img src="docs/images/start1.jpg" width="700" alt="运行状态"></td>
   </tr>
 </table>
 
