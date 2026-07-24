@@ -179,3 +179,15 @@ ENABLE_IP_PROXY = False    # 是否启用代理
 ## 📄 License
 
 MIT
+
+
+## 🚀 赞助商
+
+IPWO 提供全球住宅代理资源，为爬虫开发、数据采集和自动化任务提供更灵活的网络环境支持。
+无论是项目测试、数据分析还是多地区访问需求，都可以根据业务场景选择合适的代理方案。
+
+[访问IPWO](https://www.ipwo.net/?ref=githubpbeenigg)  
+
+
+
+
