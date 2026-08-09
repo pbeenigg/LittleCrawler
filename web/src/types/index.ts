@@ -4,6 +4,7 @@
 export interface User {
   id: number;
   username: string;
+  is_active: boolean;
 }
 
 export interface LoginRequest {
@@ -33,8 +34,11 @@ export interface CrawlerConfig {
   specified_ids?: string;  // 指定ID列表（detail模式）
   creator_ids?: string;  // 创作者ID列表（creator模式）
   start_page?: number;
+  max_pages?: number;
   enable_comments?: boolean;
   enable_sub_comments?: boolean;
+  enable_proxy?: boolean;
+  enable_cdp?: boolean;
   save_option?: SaveDataOption;
   cookies?: string;
   headless?: boolean;
@@ -55,9 +59,11 @@ export interface CrawlerTask {
 
 // 爬虫状态响应
 export interface CrawlerStatusResponse {
-  is_running: boolean;
-  current_task: CrawlerTask | null;
-  supported_platforms: string[];
+  status: 'idle' | 'running' | 'stopping' | 'error';
+  platform: string | null;
+  crawler_type: string | null;
+  started_at: string | null;
+  error_message: string | null;
 }
 
 // 数据记录类型（通用）
@@ -90,7 +96,7 @@ export interface PaginatedResponse<T> {
 // 日志条目
 export interface LogEntry {
   timestamp: string;
-  level: 'DEBUG' | 'INFO' | 'WARNING' | 'ERROR';
+  level: 'DEBUG' | 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
   message: string;
   module?: string;
 }

@@ -10,14 +10,13 @@
 
 from enum import Enum
 from typing import Optional, Literal
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, model_validator
 
 
 class PlatformEnum(str, Enum):
     """支持的平台枚举"""
     XHS = "xhs"      # 小红书
     ZHIHU = "zhihu"  # 知乎
-    XHY = "xhy"     # 小黄鱼 & 闲鱼
 
 
 class LoginTypeEnum(str, Enum):
@@ -52,13 +51,31 @@ class CrawlerStartRequest(BaseModel):
     keywords: str = ""  # 搜索关键词（search模式）
     specified_ids: str = ""  # 指定ID列表（detail模式），逗号分隔
     creator_ids: str = ""  # 创作者ID列表（creator模式），逗号分隔
-    start_page: int = 1  # 起始页码
-    max_pages: Optional[int] = None  # 最大页数，None表示无限制
+    start_page: int = Field(default=1, ge=1, description="搜索起始页码")
+    max_pages: Optional[int] = Field(
+        default=None,
+        ge=1,
+        description="每个关键词的最大搜索页数；None 表示使用项目配置的默认限制",
+    )
     enable_comments: bool = True  # 是否爬取评论
     enable_sub_comments: bool = False  # 是否爬取子评论
+    enable_proxy: bool = False  # 是否启用代理 IP 池
+    enable_cdp: bool = True  # 是否使用 CDP 浏览器模式
     save_option: SaveDataOptionEnum = SaveDataOptionEnum.JSON  # 存储方式
     cookies: str = ""  # Cookie字符串（cookie登录时使用）
     headless: bool = False  # 是否无头模式
+
+    @model_validator(mode="after")
+    def validate_mode_input(self):
+        required_fields = {
+            CrawlerTypeEnum.SEARCH: ("keywords", self.keywords),
+            CrawlerTypeEnum.DETAIL: ("specified_ids", self.specified_ids),
+            CrawlerTypeEnum.CREATOR: ("creator_ids", self.creator_ids),
+        }
+        field_name, value = required_fields[self.crawler_type]
+        if not value.strip():
+            raise ValueError(f"{field_name} is required for {self.crawler_type.value} mode")
+        return self
 
 
 class CrawlerStatusResponse(BaseModel):

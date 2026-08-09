@@ -225,12 +225,14 @@ class CrawlerManager:
         if config.start_page != 1:
             cmd.extend(["--start", str(config.start_page)])
 
-        # 最大页数：None 或 0 表示无限制
-        if config.max_pages and config.max_pages > 0:
+        # 最大页数：None 表示使用后端默认数量限制
+        if config.max_pages is not None:
             cmd.extend(["--max_page", str(config.max_pages)])
 
         cmd.extend(["--get_comment", "true" if config.enable_comments else "false"])
         cmd.extend(["--get_sub_comment", "true" if config.enable_sub_comments else "false"])
+        cmd.extend(["--enable_proxy", "true" if config.enable_proxy else "false"])
+        cmd.extend(["--enable_cdp", "true" if config.enable_cdp else "false"])
 
         if config.cookies:
             cmd.extend(["--cookies", config.cookies])
@@ -245,9 +247,12 @@ class CrawlerManager:
 
         try:
             while self.process and self.process.poll() is None:
+                stdout = self.process.stdout
+                if stdout is None:
+                    break
                 # Read a line in thread pool
                 line = await loop.run_in_executor(
-                    None, self.process.stdout.readline
+                    None, stdout.readline
                 )
                 if line:
                     line = line.strip()

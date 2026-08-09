@@ -5,10 +5,9 @@ from __future__ import annotations
 import sys
 from enum import Enum
 from types import SimpleNamespace
-from typing import Iterable, Optional, Sequence, Type, TypeVar
+from typing import Annotated, Optional, Sequence, Type, TypeVar
 
 import typer
-from typing_extensions import Annotated
 
 import config
 from src.utils.utils import str2bool
@@ -21,7 +20,6 @@ class PlatformEnum(str, Enum):
     """Supported media platform enumeration"""
 
     XHS = "xhs"
-    XHY = "xhy"
     ZHIHU = "zhihu"
 
 
@@ -62,7 +60,7 @@ class InitDbOptionEnum(str, Enum):
 def _to_bool(value: bool | str) -> bool:
     if isinstance(value, bool):
         return value
-    return str2bool(value)
+    return bool(str2bool(value))
 
 
 def _coerce_enum(
@@ -85,7 +83,7 @@ def _coerce_enum(
         return default
 
 
-def _normalize_argv(argv: Optional[Sequence[str]]) -> Iterable[str]:
+def _normalize_argv(argv: Optional[Sequence[str]]) -> list[str]:
     if argv is None:
         return list(sys.argv[1:])
     return list(argv)
@@ -144,10 +142,20 @@ async def parse_cmd(argv: Optional[Sequence[str]] = None):
             int,
             typer.Option(
                 "--start",
+                min=1,
                 help="Starting page number",
                 rich_help_panel="Basic Configuration",
             ),
         ] = config.START_PAGE,
+        max_page: Annotated[
+            Optional[int],
+            typer.Option(
+                "--max_page",
+                min=1,
+                help="Maximum search result pages per keyword; omitted uses the configured note limit",
+                rich_help_panel="Basic Configuration",
+            ),
+        ] = None,
         keywords: Annotated[
             str,
             typer.Option(
@@ -183,6 +191,24 @@ async def parse_cmd(argv: Optional[Sequence[str]] = None):
                 show_default=True,
             ),
         ] = str(config.HEADLESS),
+        enable_proxy: Annotated[
+            str,
+            typer.Option(
+                "--enable_proxy",
+                help="Whether to enable the proxy IP pool, supports yes/true/t/y/1 or no/false/f/n/0",
+                rich_help_panel="Runtime Configuration",
+                show_default=True,
+            ),
+        ] = str(config.ENABLE_IP_PROXY),
+        enable_cdp: Annotated[
+            str,
+            typer.Option(
+                "--enable_cdp",
+                help="Whether to use CDP browser mode, supports yes/true/t/y/1 or no/false/f/n/0",
+                rich_help_panel="Runtime Configuration",
+                show_default=True,
+            ),
+        ] = str(config.ENABLE_CDP_MODE),
         save_data_option: Annotated[
             SaveDataOptionEnum,
             typer.Option(
@@ -231,22 +257,31 @@ async def parse_cmd(argv: Optional[Sequence[str]] = None):
         enable_comment = _to_bool(get_comment)
         enable_sub_comment = _to_bool(get_sub_comment)
         enable_headless = _to_bool(headless)
+        enable_proxy_value = _to_bool(enable_proxy)
+        enable_cdp_value = _to_bool(enable_cdp)
         init_db_value = init_db.value if init_db else None
 
         # Parse specified_id and creator_id into lists
-        specified_id_list = [id.strip() for id in specified_id.split(",") if id.strip()] if specified_id else []
-        creator_id_list = [id.strip() for id in creator_id.split(",") if id.strip()] if creator_id else []
+        specified_id_list = [item.strip() for item in specified_id.split(",") if item.strip()] if specified_id else []
+        creator_id_list = [item.strip() for item in creator_id.split(",") if item.strip()] if creator_id else []
 
         # override global config
         config.PLATFORM = platform.value
         config.LOGIN_TYPE = lt.value
         config.CRAWLER_TYPE = crawler_type.value
         config.START_PAGE = start
+        if max_page is not None:
+            # Both current platform search APIs return 20 items per page. The
+            # crawler already limits work by note count, so translate the Web
+            # API's page limit into the existing single source of truth.
+            config.CRAWLER_MAX_NOTES_COUNT = max_page * 20
         config.KEYWORDS = keywords
         config.ENABLE_GET_COMMENTS = enable_comment
         config.ENABLE_GET_SUB_COMMENTS = enable_sub_comment
         config.HEADLESS = enable_headless
         config.CDP_HEADLESS = enable_headless
+        config.ENABLE_IP_PROXY = enable_proxy_value
+        config.ENABLE_CDP_MODE = enable_cdp_value
         config.SAVE_DATA_OPTION = save_data_option.value
         config.COOKIES = cookies
 
@@ -254,20 +289,27 @@ async def parse_cmd(argv: Optional[Sequence[str]] = None):
         if specified_id_list:
             if platform == PlatformEnum.XHS:
                 config.XHS_SPECIFIED_NOTE_URL_LIST = specified_id_list
+            elif platform == PlatformEnum.ZHIHU:
+                config.ZHIHU_SPECIFIED_ID_LIST = specified_id_list
 
         if creator_id_list:
             if platform == PlatformEnum.XHS:
                 config.XHS_CREATOR_ID_LIST = creator_id_list
+            elif platform == PlatformEnum.ZHIHU:
+                config.ZHIHU_CREATOR_URL_LIST = creator_id_list
 
         return SimpleNamespace(
             platform=config.PLATFORM,
             lt=config.LOGIN_TYPE,
             type=config.CRAWLER_TYPE,
             start=config.START_PAGE,
+            max_page=max_page,
             keywords=config.KEYWORDS,
             get_comment=config.ENABLE_GET_COMMENTS,
             get_sub_comment=config.ENABLE_GET_SUB_COMMENTS,
             headless=config.HEADLESS,
+            enable_proxy=config.ENABLE_IP_PROXY,
+            enable_cdp=config.ENABLE_CDP_MODE,
             save_data_option=config.SAVE_DATA_OPTION,
             init_db=init_db_value,
             cookies=config.COOKIES,

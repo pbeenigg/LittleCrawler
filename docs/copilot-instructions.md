@@ -2,7 +2,7 @@
 
 ## 项目概述
 
-基于 Python 异步编程的多平台社交媒体爬虫框架（Python >=3.11），支持小红书 (xhs) 和知乎 (zhihu)。项目包含爬虫核心 + Web 管理后台。
+基于 Python 异步编程的多平台社交媒体爬虫框架（Python 3.12），支持小红书 (xhs) 和知乎 (zhihu)。项目包含爬虫核心 + Web 管理后台。
 
 ## 项目结构
 
@@ -20,12 +20,10 @@ LittleCrawler/
 │   │   └── var.py          # 上下文变量（crawler_type_var, source_keyword_var）
 │   ├── platforms/          # 平台实现
 │   │   ├── xhs/            # 小红书爬虫
-│   │   ├── xhy/            # 小黄鱼爬虫
 │   │   └── zhihu/          # 知乎爬虫
 │   ├── storage/            # 存储模块
 │   │   ├── base/           # 数据库、Excel 基类、ORM 模型
 │   │   ├── xhs/            # 小红书存储实现（6种：csv/db/json/sqlite/mongodb/excel）
-│   │   ├── xhy/            # 小黄鱼存储实现（6种：csv/db/json/sqlite/mongodb/excel）
 │   │   └── zhihu/          # 知乎存储实现
 │   ├── models/             # Pydantic 数据模型
 │   ├── services/           # 服务层
@@ -126,7 +124,7 @@ else:
 uv sync                                      # 安装依赖
 uv run python main.py                        # 运行（使用 config 默认值）
 uv run python main.py --platform xhs --type search  # 指定平台和类型
-uv run python main.py --init-db sqlite       # 初始化数据库
+uv run python main.py --init_db sqlite       # 初始化数据库
 
 # Web 后台
 uv run uvicorn api.main:app --port 8080 --reload        # 启动完整服务

@@ -28,9 +28,14 @@ async def start_crawler(
     """
     启动爬虫任务
     
-    - **platform**: 目标平台 (xhs/zhihu/xhy)
+    - **platform**: 目标平台 (xhs/zhihu)
     - **crawler_type**: 爬取类型 (search/detail/creator)
-    - **keywords**: 搜索关键词（search模式）
+    - **keywords**: 搜索关键词（search 模式必填）
+    - **specified_ids**: 内容 ID/URL（detail 模式必填）
+    - **creator_ids**: 创作者 ID/URL（creator 模式必填）
+    - **max_pages**: 每个关键词的最大搜索页数；不填则使用项目默认限制
+    - **enable_proxy**: 是否启用代理 IP 池
+    - **enable_cdp**: 是否使用 CDP 浏览器模式
     """
     success = await crawler_manager.start(request)
     if not success:

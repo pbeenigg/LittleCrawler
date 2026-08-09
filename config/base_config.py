@@ -1,5 +1,5 @@
 # 基础配置
-PLATFORM = "xhs"  # 平台，xhs | zhihu | xhy
+PLATFORM = "xhs"  # 平台，xhs | zhihu
 KEYWORDS = "咖啡,美式"  # 关键词搜索配置，以英文逗号分隔
 LOGIN_TYPE = "qrcode"  # qrcode or phone or cookie
 COOKIES = ""

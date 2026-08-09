@@ -17,16 +17,26 @@ import asyncio
 import os
 import subprocess
 import uvicorn
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 from .routers import auth_router, crawler_router, data_router, websocket_router, publisher_router
+from .routers.auth import get_current_user
 from .services.auth_service import init_user_db
 
 # 检查是否仅启动 API（不含前端）
 API_ONLY = os.environ.get("API_ONLY", "").lower() in ("1", "true", "yes")
+
+
+def get_cors_origins() -> list[str]:
+    """Return the configured browser origins allowed to call the API."""
+    configured = os.environ.get(
+        "LITTLECRAWLER_CORS_ORIGINS",
+        "http://localhost:3000,http://127.0.0.1:3000",
+    )
+    return [origin.strip().rstrip("/") for origin in configured.split(",") if origin.strip()]
 
 app = FastAPI(
     title="LittleCrawler API",
@@ -37,10 +47,10 @@ app = FastAPI(
 # Get webui static files directory
 WEBUI_DIR = os.path.join(os.path.dirname(__file__), "ui")
 
-# CORS configuration - allow frontend dev server access
+# CORS configuration for separately hosted frontend development servers.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 允许所有来源（生产环境应限制）
+    allow_origins=get_cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -93,7 +103,7 @@ async def health_check():
 
 
 @app.get("/api/env/check")
-async def check_environment():
+async def check_environment(current_user: dict = Depends(get_current_user)):
     """Check if LittleCrawler environment is configured correctly"""
     try:
         # Run uv run main.py --help command to check environment
@@ -147,7 +157,6 @@ async def get_platforms():
     return {
         "platforms": [
             {"value": "xhs", "label": "小红书", "icon": "book-open"},
-            {"value": "xhy", "label": "小黄鱼", "icon": "messages-square"},
             {"value": "zhihu", "label": "知乎", "icon": "help-circle"},
         ]
     }

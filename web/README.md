@@ -31,6 +31,9 @@ npm install
 # 启动开发服务器
 npm run dev
 
+# TypeScript 类型检查
+npm run typecheck
+
 # 构建生产版本（输出到 ../api/ui）
 npm run build
 ```

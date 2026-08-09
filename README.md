@@ -5,9 +5,10 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/Python-3.12-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/uv-package%20manager-DE5FE9?style=flat-square" alt="uv">
   <img src="https://img.shields.io/badge/Playwright-1.45+-2EAD33?style=flat-square&logo=playwright&logoColor=white" alt="Playwright">
-  <img src="https://img.shields.io/badge/FastAPI-0.115+-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI">
+  <img src="https://img.shields.io/badge/FastAPI-0.110.2-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI">
   <img src="https://img.shields.io/badge/Next.js-14+-000000?style=flat-square&logo=next.js&logoColor=white" alt="Next.js">
   <img src="https://img.shields.io/badge/NextUI-2.0+-000000?style=flat-square&logo=nextui&logoColor=white" alt="NextUI">
   <img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="License">
@@ -16,7 +17,6 @@
 <p align="center">
   <img src="https://img.shields.io/badge/小红书-FF2442?style=flat-square&logo=xiaohongshu&logoColor=white" alt="小红书">
   <img src="https://img.shields.io/badge/知乎-0084FF?style=flat-square&logo=zhihu&logoColor=white" alt="知乎">
-  <img src="https://img.shields.io/badge/小黄鱼-FFD700?style=flat-square&logo=firefish&logoColor=black" alt="小黄鱼,闲鱼">
 </p>
 
 ---
@@ -26,15 +26,15 @@
 | 平台   | 代号    | 功能             |
 | ------ | ------- | ---------------- |
 | 小红书 | `xhs`   | 笔记、详情、作者 |
-| 小黄鱼 | `xhy`   | 商品、笔记、作者 |
 | 知乎   | `zhihu` | 文章、详情、作者 |
 
 ## 🚀 快速开始
 
 ### 📦 环境要求
 
-- Python >= 3.11
-- [uv](https://github.com/astral-sh/uv) (推荐) 或 pip
+- Python 3.12
+- [uv](https://github.com/astral-sh/uv)
+- Node.js 18+ 与 npm（仅 Web 后台需要）
 
 ### 📥 安装
 
@@ -43,51 +43,61 @@
 git clone https://github.com/pbeenig/LittleCrawler.git
 cd LittleCrawler
 
-# 安装依赖
-uv sync
-# 或
-pip install -r requirements.txt
+# 安装运行与开发依赖（自动创建 .venv）
+uv sync --locked --group dev
 
 # 安装浏览器
-playwright install chromium
+uv run playwright install chromium
 ```
 
 ### ▶️ 运行
 
 ```bash
 # 默认运行（使用 config/base_config.py 配置）
-python main.py
+uv run python main.py
 
 # 指定平台和爬虫类型
-python main.py --platform xhs --type search
+uv run python main.py --platform xhs --type search
 
 # 初始化数据库
-python main.py --init-db sqlite
+uv run python main.py --init_db sqlite
 ```
+
+`pyproject.toml` 与 `uv.lock` 是项目依赖的唯一来源。`requirements.txt`
+仅作为旧部署环境的兼容导出文件，请不要手工编辑。
 
 ### 🖥️ Web 后台
 
 ```bash
+# 完整部署：安装依赖并编译前端页面到 `api/ui`
+cd ./web
+npm install
+npm run build
+cd ..
 
-## Step 1:  编译前端页面 到  `api/ui` 目录下
-cd ./web &&  npm run build
-
-## Step 2:  启动 完整服务（API + 前端页面）
+# 启动完整服务（API + 前端页面）
 uv run uvicorn api.main:app --port 8080 --reload
 
-## Step 3： 访问 `http://127.0.0.1:8080`
+# 访问 http://127.0.0.1:8080
+```
 
+开发时可分别启动 API 与 Web：
 
-
-## Step 1:  启动仅 API 服务（不含前端页面）
+```bash
+# 终端 1：启动仅 API 服务
 API_ONLY=1 uv run uvicorn api.main:app --port 8080 --reload
 
+# 终端 2：开发模式启动 Web 后台（首次启动先运行 npm install）
+cd ./web
+npm run dev
+# 访问 http://localhost:3000
+```
 
-## Step 2:  开发模式启动 Web 后台
-cd ./web &&  npm run dev
+前后端分离部署时，可用逗号分隔的环境变量配置允许访问 API 的前端来源：
 
-## Step 3： 访问 `http://127.0.0.1:8080`
-
+```bash
+LITTLECRAWLER_CORS_ORIGINS=http://localhost:3000,https://crawler.example.com \
+  uv run uvicorn api.main:app --port 8080
 ```
 
 ## 📸 界面预览
@@ -116,9 +126,19 @@ cd ./web &&  npm run dev
 ## 清除 缓存数据  (node_modules|.venv|.git|.next|out|browser_data|data|.codacy )
 find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null; tree -L 2 -d --noreport -I 'node_modules|.venv|.git|.next|out|browser_data|data|.codacy'
 
-##
+## 查看 CLI 帮助
 uv run python main.py --help
 
+## 代码质量
+uv run ruff check .
+uv run mypy
+uv run pytest
+
+## 格式化本次修改的 Python 文件
+uv run ruff format path/to/changed_file.py
+
+## 安装 Git 提交前检查
+uv run pre-commit install
 
 ```
 
@@ -145,12 +165,10 @@ ENABLE_IP_PROXY = False    # 是否启用代理
 │   ├── core/                # 核心模块（基类、命令行、上下文变量）
 │   ├── platforms/           # 平台爬虫实现
 │   │   ├── xhs/             # 小红书爬虫
-│   │   ├── xhy/             # 小黄鱼爬虫
 │   │   └── zhihu/           # 知乎爬虫
 │   ├── storage/             # 数据存储层
 │   │   ├── base/            # 通用存储（DB、Excel、MongoDB）
 │   │   ├── xhs/             # 小红书存储实现
-│   │   ├── xhy/             # 小黄鱼存储实现
 │   │   └── zhihu/           # 知乎存储实现
 │   ├── models/              # Pydantic 数据模型
 │   ├── services/            # 服务层
@@ -191,7 +209,3 @@ IPWO 提供全球住宅代理资源，为爬虫开发、数据采集和自动化
 无论是项目测试、数据分析还是多地区访问需求，都可以根据业务场景选择合适的代理方案。
 
 [访问IPWO](https://www.ipwo.net/?ref=githubpbeenigg)  
-
-
-
-

@@ -44,7 +44,7 @@ class XhsCsvStoreImplement(AbstractStore):
 
 
     async def store_creator(self, creator_item: Dict):
-        pass
+        await self.writer.write_to_csv(item_type="creators", item=creator_item)
 
     def flush(self):
         pass
@@ -72,7 +72,9 @@ class XhsJsonStoreImplement(AbstractStore):
         await self.writer.write_single_item_to_json(item_type="comments", item=comment_item)
 
     async def store_creator(self, creator_item: Dict):
-        pass
+        await self.writer.write_single_item_to_json(
+            item_type="creators", item=creator_item
+        )
 
     def flush(self):
         """

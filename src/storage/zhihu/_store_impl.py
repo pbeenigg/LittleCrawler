@@ -194,16 +194,16 @@ class ZhihuMongoStoreImplement(AbstractStore):
         Args:
             content_item: Content data
         """
-        note_id = content_item.get("note_id")
-        if not note_id:
+        content_id = content_item.get("content_id")
+        if not content_id:
             return
 
         await self.mongo_store.save_or_update(
             collection_suffix="contents",
-            query={"note_id": note_id},
+            query={"content_id": content_id},
             data=content_item
         )
-        utils.logger.info(f"[ZhihuMongoStoreImplement.store_content] Saved note {note_id} to MongoDB")
+        utils.logger.info(f"[ZhihuMongoStoreImplement.store_content] Saved content {content_id} to MongoDB")
 
     async def store_comment(self, comment_item: Dict):
         """

@@ -104,7 +104,11 @@ async def login(request: UserLogin):
         data={"user_id": user["id"], "username": user["username"]}
     )
     
-    return Token(access_token=access_token, token_type="bearer")
+    return Token(
+        access_token=access_token,
+        token_type="bearer",
+        user=UserInfo(**user),
+    )
 
 
 @router.get("/me", response_model=UserInfo, summary="获取当前用户")

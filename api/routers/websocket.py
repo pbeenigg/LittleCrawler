@@ -6,8 +6,8 @@ WebSocket路由模块
 - WS /ws/logs - 实时日志推送
 - WS /ws/status - 实时状态推送
 
-WebSocket连接不需要Token认证（考虑到浏览器兼容性）
-但仅在用户已登录后才会建立连接
+WebSocket 通过查询参数中的 Token 认证，浏览器客户端使用
+`?token=<access-token>` 建立连接。
 """
 
 import asyncio
@@ -16,6 +16,7 @@ from typing import Set, Optional
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from ..services import crawler_manager
+from ..services.auth_service import get_user_by_id, verify_token
 
 router = APIRouter(tags=["WebSocket"])
 
@@ -64,6 +65,17 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
+async def authenticate_websocket(websocket: WebSocket) -> bool:
+    """Validate the query-string token before accepting a WebSocket."""
+    token = websocket.query_params.get("token")
+    payload = verify_token(token) if token else None
+    user_id = payload.get("user_id") if payload else None
+    if user_id is None or get_user_by_id(user_id) is None:
+        await websocket.close(code=1008, reason="Unauthorized")
+        return False
+    return True
+
+
 async def log_broadcaster():
     """
     后台任务：从队列读取日志并广播
@@ -104,6 +116,9 @@ async def websocket_logs(websocket: WebSocket):
     客户端发送'ping'，服务端响应'pong'
     """
     print("[WS] 新连接请求")
+
+    if not await authenticate_websocket(websocket):
+        return
 
     try:
         # 确保广播任务运行中
@@ -151,6 +166,9 @@ async def websocket_logs(websocket: WebSocket):
 @router.websocket("/ws/status")
 async def websocket_status(websocket: WebSocket):
     """WebSocket status stream"""
+    if not await authenticate_websocket(websocket):
+        return
+
     await websocket.accept()
 
     try:

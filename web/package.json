@@ -6,7 +6,8 @@
     "dev": "next dev -p 3000",
     "build": "next build && rm -rf ../api/ui && cp -r out ../api/ui",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@nextui-org/react": "^2.4.8",

@@ -1,10 +1,10 @@
 [project]
 name = "LittleCrawler"
-author = "Pax <pbeenig@gmail.com>"
+authors = [{ name = "Pax", email = "pbeenig@gmail.com" }]
 version = "1.0.0"
-description = "LittleCrawler，支持小红书（xhs）、知乎（zh）平台的公开信息抓取。"
+description = "LittleCrawler，支持小红书（xhs）、知乎（zhihu）平台的公开信息抓取。"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12,<3.13"
 dependencies = [
     "aiofiles~=23.2.1",
     "aiomysql==0.2.0",
@@ -17,10 +17,11 @@ dependencies = [
     "jieba==0.42.1",
     "matplotlib==3.9.0",
     "motor>=3.3.0",
-    "opencv-python>=4.11.0.86",
+    "numpy>=1.26,<3",
+    "opencv-python>=4.11.0.86,<5",
     "pandas==2.2.3",
     "parsel==1.9.1",
-    "pillow==9.5.0",
+    "pillow>=10.1,<12",
     "playwright==1.45.0",
     "pydantic==2.5.2",
     "pyexecjs==1.5.1",
@@ -33,14 +34,60 @@ dependencies = [
     "typer>=0.12.3",
     "uvicorn==0.29.0",
     "wordcloud==1.9.3",
-    "pre-commit>=3.5.0",
     "openpyxl>=3.1.2",
-    "pytest>=7.4.0",
-    "pytest-asyncio>=0.21.0",
     "websockets>=15.0.1",
     "python-multipart>=0.0.21",
 ]
 
+[dependency-groups]
+dev = [
+    "mypy>=1.13,<2",
+    "pre-commit>=4,<5",
+    "pytest>=8,<9",
+    "pytest-asyncio>=0.24,<1",
+    "ruff>=0.9,<1",
+]
+
+[tool.uv]
+package = false
+
 [[tool.uv.index]]
+name = "tuna"
 url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 default = true
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+extend-exclude = ["api/ui", "web", "libs"]
+
+[tool.ruff.lint]
+# Start with correctness-focused, low-noise rules. Broader rules can be enabled
+# incrementally without forcing an unrelated whole-repository rewrite.
+select = ["E9", "F63", "F7", "F82", "A", "LOG", "PLE", "PT", "RSE", "T10", "YTT"]
+
+[tool.ruff.format]
+quote-style = "preserve"
+line-ending = "lf"
+
+[tool.pytest.ini_options]
+minversion = "8.3"
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra --strict-config --strict-markers"
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.mypy]
+python_version = "3.12"
+files = [
+    "src/core/arg.py",
+    "api/schemas/crawler.py",
+    "api/services/crawler_manager.py",
+    "tests",
+]
+follow_imports = "skip"
+ignore_missing_imports = true
+check_untyped_defs = true
+warn_return_any = true
+warn_unused_configs = true

@@ -70,6 +70,7 @@ import {
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { crawlerApi, dataApi, getWsUrl } from '@/lib/api';
+import type { CrawlerConfig, CrawlerStatusResponse, SaveDataOption } from '@/types';
 
 // 格式化日志时间戳，支持 "YYYY-MM-DD HH:mm:ss" 和 ISO 格式
 const formatLogTime = (timestamp: string): string => {
@@ -100,7 +101,7 @@ const formatLogTime = (timestamp: string): string => {
 interface LogEntry {
   id: string;
   timestamp: string;
-  level: 'INFO' | 'WARNING' | 'ERROR' | 'DEBUG';
+  level: 'INFO' | 'WARNING' | 'ERROR' | 'DEBUG' | 'SUCCESS';
   message: string;
 }
 
@@ -126,6 +127,7 @@ const LOG_COLORS: Record<string, string> = {
   WARNING: 'text-yellow-400',
   ERROR: 'text-red-400',
   DEBUG: 'text-gray-400',
+  SUCCESS: 'text-green-400',
 };
 
 export default function DashboardPage() {
@@ -135,16 +137,16 @@ export default function DashboardPage() {
   const router = useRouter();
 
   // 爬虫配置
-  const [platform, setPlatform] = useState('xhs');
-  const [crawlerType, setCrawlerType] = useState('search');
-  const [loginType, setLoginType] = useState('qrcode');
-  const [saveFormat, setSaveFormat] = useState('json');
-  const [maxPages, setMaxPages] = useState('');  // 空字符串表示无限制
+  const [platform, setPlatform] = useState<CrawlerConfig['platform']>('xhs');
+  const [crawlerType, setCrawlerType] = useState<CrawlerConfig['crawler_type']>('search');
+  const [loginType, setLoginType] = useState<CrawlerConfig['login_type']>('qrcode');
+  const [saveFormat, setSaveFormat] = useState<SaveDataOption>('json');
+  const [maxPages, setMaxPages] = useState('');  // 空字符串表示使用后端默认限制
   const [keywords, setKeywords] = useState('');
   const [enableProxy, setEnableProxy] = useState(false);
-  const [enableCdp, setEnableCdp] = useState(false);
+  const [enableCdp, setEnableCdp] = useState(true);
   const [isRunning, setIsRunning] = useState(false);
-  const [crawlerStatus, setCrawlerStatus] = useState<any>(null);
+  const [crawlerStatus, setCrawlerStatus] = useState<CrawlerStatusResponse | null>(null);
 
   // 日志
   const [logs, setLogs] = useState<LogEntry[]>([]);
@@ -272,17 +274,28 @@ export default function DashboardPage() {
     if (!token) return;
     setDataLoading(true);
     try {
+      const fileType = saveFormat === 'excel'
+        ? 'xlsx'
+        : saveFormat === 'json' || saveFormat === 'csv'
+          ? saveFormat
+          : null;
+      if (!fileType) {
+        setDataList([]);
+        setDataTotal(0);
+        return;
+      }
+
       // 1. 获取该平台的文件列表
-      const filesRes = await dataApi.getFiles(token, platform, 'json');
+      const filesRes = await dataApi.getFiles(token, platform, fileType);
       const files = filesRes.files || [];
       
       if (files.length > 0) {
         // 2. 优先选择 contents 文件（笔记/文章），其次是 comments
-        const contentsFile = files.find((f: any) => f.name.includes('contents'));
+        const contentsFile = files.find((file) => file.name.includes('contents'));
         const latestFile = contentsFile || files[0];
         
         // 3. 获取文件内容预览
-        const contentRes = await dataApi.getFileContent(token, latestFile.path, 10);
+        const contentRes = await dataApi.getFileContent<DataItem>(token, latestFile.path, 10);
         setDataList(contentRes.data || []);
         setDataTotal(contentRes.total || 0);
       } else {
@@ -302,36 +315,43 @@ export default function DashboardPage() {
     if (token) {
       loadData();
     }
-  }, [platform, token]);
+  }, [platform, saveFormat, token]);
   
   // 爬虫运行时定期刷新数据
   useEffect(() => {
     if (!isRunning || !token) return;
     const interval = setInterval(loadData, 5000);
     return () => clearInterval(interval);
-  }, [isRunning, token, platform]);
+  }, [isRunning, token, platform, saveFormat]);
 
   // 启动爬虫
   const handleStart = async () => {
     if (!token) return;
-    if (!keywords.trim() && crawlerType === 'search') {
-      addSystemLog('请输入搜索关键词', 'WARNING');
+    const inputValue = keywords.trim();
+    if (!inputValue) {
+      const inputName = crawlerType === 'search' ? '搜索关键词' : crawlerType === 'detail' ? '内容 ID/URL' : '创作者 ID/URL';
+      addSystemLog(`请输入${inputName}`, 'WARNING');
       return;
     }
 
     try {
       addSystemLog(`开始启动 ${platform} 爬虫...`);
-      await crawlerApi.start(token, {
+      const crawlerConfig: CrawlerConfig = {
         platform,
         crawler_type: crawlerType,
         login_type: loginType,
         save_option: saveFormat,
-        keywords: keywords.trim(),
         start_page: 1,
-        max_pages: maxPages ? parseInt(maxPages) : undefined,  // 空或0表示无限制
+        max_pages: maxPages ? parseInt(maxPages) : undefined,
         enable_comments: true,
-        headless: enableCdp,
-      });
+        enable_proxy: enableProxy,
+        enable_cdp: enableCdp,
+      };
+      if (crawlerType === 'search') crawlerConfig.keywords = inputValue;
+      if (crawlerType === 'detail') crawlerConfig.specified_ids = inputValue;
+      if (crawlerType === 'creator') crawlerConfig.creator_ids = inputValue;
+
+      await crawlerApi.start(token, crawlerConfig);
       setIsRunning(true);
       addSystemLog('爬虫启动成功！', 'INFO');
     } catch (e: any) {
@@ -533,7 +553,7 @@ export default function DashboardPage() {
                   <Select
                     label={t('crawler.platform')}
                     selectedKeys={[platform]}
-                    onChange={(e) => setPlatform(e.target.value)}
+                    onChange={(e) => setPlatform(e.target.value as CrawlerConfig['platform'])}
                     classNames={{
                       trigger: 'bg-white/5 border-white/10 hover:bg-white/10',
                       label: 'text-gray-400',
@@ -550,7 +570,7 @@ export default function DashboardPage() {
                   <Select
                     label={t('crawler.crawlerType')}
                     selectedKeys={[crawlerType]}
-                    onChange={(e) => setCrawlerType(e.target.value)}
+                    onChange={(e) => setCrawlerType(e.target.value as CrawlerConfig['crawler_type'])}
                     classNames={{
                       trigger: 'bg-white/5 border-white/10 hover:bg-white/10',
                       label: 'text-gray-400',
@@ -570,7 +590,7 @@ export default function DashboardPage() {
                   <Select
                     label={t('crawler.loginType')}
                     selectedKeys={[loginType]}
-                    onChange={(e) => setLoginType(e.target.value)}
+                    onChange={(e) => setLoginType(e.target.value as CrawlerConfig['login_type'])}
                     classNames={{
                       trigger: 'bg-white/5 border-white/10 hover:bg-white/10',
                       label: 'text-gray-400',
@@ -590,7 +610,7 @@ export default function DashboardPage() {
                   <Select
                     label={t('data.saveFormat')}
                     selectedKeys={[saveFormat]}
-                    onChange={(e) => setSaveFormat(e.target.value)}
+                    onChange={(e) => setSaveFormat(e.target.value as SaveDataOption)}
                     classNames={{
                       trigger: 'bg-white/5 border-white/10 hover:bg-white/10',
                       label: 'text-gray-400',
@@ -613,8 +633,16 @@ export default function DashboardPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Input
-                    label={t('crawler.keywords')}
-                    placeholder={t('crawler.keywordsPlaceholder')}
+                    label={crawlerType === 'search'
+                      ? t('crawler.keywords')
+                      : crawlerType === 'detail'
+                        ? t('crawler.specifiedIds')
+                        : t('crawler.creatorIds')}
+                    placeholder={crawlerType === 'search'
+                      ? t('crawler.keywordsPlaceholder')
+                      : crawlerType === 'detail'
+                        ? t('crawler.specifiedIdsPlaceholder')
+                        : t('crawler.creatorIdsPlaceholder')}
                     value={keywords}
                     onChange={(e) => setKeywords(e.target.value)}
                     startContent={<Search className="w-4 h-4 text-gray-400" />}
@@ -701,15 +729,15 @@ export default function DashboardPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-white/5 rounded-lg p-3 text-center">
                     <div className="text-2xl font-semibold text-cyan-400">
-                      {crawlerStatus?.notes_count || 0}
+                      {crawlerStatus?.platform || '-'}
                     </div>
-                    <p className="text-xs text-gray-400">{t('data.notes')}</p>
+                    <p className="text-xs text-gray-400">{t('crawler.platform')}</p>
                   </div>
                   <div className="bg-white/5 rounded-lg p-3 text-center">
                     <div className="text-2xl font-semibold text-purple-400">
-                      {crawlerStatus?.comments_count || 0}
+                      {crawlerStatus?.crawler_type || '-'}
                     </div>
-                    <p className="text-xs text-gray-400">{t('data.comments')}</p>
+                    <p className="text-xs text-gray-400">{t('crawler.crawlerType')}</p>
                   </div>
                 </div>
 
